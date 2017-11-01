@@ -1,0 +1,20 @@
+{
+  "manifest_version": "1",
+  "api_version": "1",
+  "name": "Cliboard History",
+  "description": "A clipboard history inspired by Alfred 3's clipboard history.",
+  "developer_name": "Nachtalb",
+  "icon": "images/icon.png",
+  "options": {
+    "query_debounce": 0.1
+  },
+  "preferences": [
+    {
+      "id": "clip_open_keyword",
+      "type": "keyword",
+      "name": "Cliboard History Keyword",
+      "description": "Open clipboard history. (Default: cm)",
+      "default_value": "cm"
+    }
+  ]
+}
