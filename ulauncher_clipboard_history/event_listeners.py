@@ -6,7 +6,8 @@ from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from . import database
 from .actions import CopyAndSaveAction
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)/usr/share/albert/org.albert.extension.python/modules
+
 
 
 class ClipboardKeywordEventListener(EventListener):
