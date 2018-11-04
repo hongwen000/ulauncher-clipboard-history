@@ -70,7 +70,7 @@ class ClipboardDatabase(object):
                 text = "<i>No text</i>"
             else:
                 text = pattern.sub(lambda m: "<u>%s</u>" % m.group(0), cgi.escape(" ".join(filter(None, text.replace("\n", " ").split(" ")))))
-            logging.debug('Got item is: "%s" "%s"', row, text)
+            logging.debug('Got item is: "%s" "%s"', row, text[:20])
             items.append({
                 'id': row,
                 'text': text,
@@ -84,15 +84,13 @@ class CopyAndSaveAction(CopyToClipboardAction):
         self.entry_id = entry_id
 
     def run(self):
-        global database
         logging.info('Copy entry "%s" with the content "%s"', self.entry_id, self.text[:20])
-        #database.update_entry(self.entry_id)
         super(CopyAndSaveAction, self).run()
 
 class ClipboardKeywordEventListener(EventListener):
     def on_event(self, event, extension):
         logging.debug('Clipboard History event: %s, argument: %s', event.__class__.__name__, event.get_argument())
-        items = database.search(event.get_argument() or None)
+        items = ClipboardDatabase.search(event.get_argument() or None)
         entries = []
         for item in items:
             entries.append(
