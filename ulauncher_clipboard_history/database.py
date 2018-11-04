@@ -68,7 +68,7 @@ class ClipboardDatabase(object):
         logging.debug('Search for copy entry term: "%s"', term)
 
         script = self.copyq_script_getMatches % term if term else self.copyq_script_getAll
-        proc = subprocess.run(['copyq', '-'], input=script.encode(), stdout=subprocess.PIPE)
+        proc = subprocess.call(['copyq', '-'], stdin=script.encode(), stdout=subprocess.PIPE)
         json_arr = json.loads(proc.stdout.decode())
         items = []
         pattern = re.compile(term, re.IGNORECASE)
