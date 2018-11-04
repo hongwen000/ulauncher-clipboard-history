@@ -6,7 +6,7 @@ import subprocess
 import json
 import html
 import re
-
+import cgi
 logger = logging.getLogger(__name__)
 base_dir = os.path.dirname(__file__)
 
@@ -74,7 +74,8 @@ class ClipboardDatabase(object):
         logging.debug('Output of copyQ: "%s"', output)
         json_arr = json.loads(output)
         items = []
-        pattern = re.compile(term, re.IGNORECASE)
+        pts = term if term else "[\s\S]*"
+        pattern = re.compile(pts, re.IGNORECASE)
         for json_obj in json_arr:
             row = json_obj['row']
             logging.debug('Row is: "%s"', row)
@@ -82,7 +83,7 @@ class ClipboardDatabase(object):
             if not text:
                 text = "<i>No text</i>"
             else:
-                text = pattern.sub(lambda m: "<u>%s</u>" % m.group(0), html.escape(" ".join(filter(None, text.replace("\n", " ").split(" ")))))
+                text = pattern.sub(lambda m: "<u>%s</u>" % m.group(0), cgi.escape(" ".join(filter(None, text.replace("\n", " ").split(" ")))))
             items.append({
                 'id': row,
                 'text': text,
