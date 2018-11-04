@@ -19,13 +19,25 @@ from ulauncher.api.shared.action.RenderResultListAction import RenderResultListA
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAction
 
-class ClipboardDatabase(object):
-    def __init__(self):
-        pass
 
-    copyq_script_getAll = r"""
-    var result=[];
-    for ( var i = 0; i < size(); ++i ) {
+copyq_script_getAll = r"""
+var result=[];
+for ( var i = 0; i < size(); ++i ) {
+    var obj = {};
+    obj.row = i;
+    obj.mimetypes = str(read("?", i)).split("\n");
+    obj.mimetypes.pop();
+    obj.text = str(read(i));
+    result.push(obj);
+}
+JSON.stringify(result);
+"""
+
+copyq_script_getMatches = r"""
+var result=[];
+var match = "%s";
+for ( var i = 0; i < size(); ++i ) {
+    if (str(read(i)).search(new RegExp(match, "i")) !== -1) {
         var obj = {};
         obj.row = i;
         obj.mimetypes = str(read("?", i)).split("\n");
@@ -33,48 +45,33 @@ class ClipboardDatabase(object):
         obj.text = str(read(i));
         result.push(obj);
     }
-    JSON.stringify(result);
-    """
+}
+JSON.stringify(result);
+"""
 
-    copyq_script_getMatches = r"""
-    var result=[];
-    var match = "%s";
-    for ( var i = 0; i < size(); ++i ) {
-        if (str(read(i)).search(new RegExp(match, "i")) !== -1) {
-            var obj = {};
-            obj.row = i;
-            obj.mimetypes = str(read("?", i)).split("\n");
-            obj.mimetypes.pop();
-            obj.text = str(read(i));
-            result.push(obj);
-        }
-    }
-    JSON.stringify(result);
-    """
+def search(self, term=None):
+    logging.debug('Search for copy entry term: "%s"', term)
 
-    def search(self, term=None):
-        logging.debug('Search for copy entry term: "%s"', term)
-
-        script = self.copyq_script_getMatches % term if term else self.copyq_script_getAll
-        #proc = subprocess.call(['copyq', '-'], stdin=script.encode(), stdout=subprocess.PIPE)
-        proc = subprocess.Popen(['copyq', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        output = proc.communicate(input=script.encode())[0]
-        json_arr = json.loads(output)
-        items = []
-        pts = term if term else "[\s\S]*"
-        pattern = re.compile(pts, re.IGNORECASE)
-        for json_obj in json_arr:
-            row = json_obj['row']
-            text = json_obj['text']
-            if not text:
-                text = "<i>No text</i>"
-            else:
-                text = pattern.sub(lambda m: "<u>%s</u>" % m.group(0), cgi.escape(" ".join(filter(None, text.replace("\n", " ").split(" ")))))
-            logging.debug('Got item is: "%s" "%s"', row, text[:20])
-            items.append({
-                'id': row,
-                'text': text,
-            })
+    script = self.copyq_script_getMatches % term if term else self.copyq_script_getAll
+    #proc = subprocess.call(['copyq', '-'], stdin=script.encode(), stdout=subprocess.PIPE)
+    proc = subprocess.Popen(['copyq', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    output = proc.communicate(input=script.encode())[0]
+    json_arr = json.loads(output)
+    items = []
+    pts = term if term else "[\s\S]*"
+    pattern = re.compile(pts, re.IGNORECASE)
+    for json_obj in json_arr:
+        row = json_obj['row']
+        text = json_obj['text']
+        if not text:
+            text = "<i>No text</i>"
+        else:
+            text = pattern.sub(lambda m: "<u>%s</u>" % m.group(0), cgi.escape(" ".join(filter(None, text.replace("\n", " ").split(" ")))))
+        logging.debug('Got item is: "%s" "%s"', row, text[:20])
+        items.append({
+            'id': row,
+            'text': text,
+        })
         return items
 
 class CopyAndSaveAction(CopyToClipboardAction):
