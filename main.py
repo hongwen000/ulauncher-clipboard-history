@@ -87,7 +87,7 @@ class CopyAndSaveAction(CopyToClipboardAction):
 class ClipboardKeywordEventListener(EventListener):
     def on_event(self, event, extension):
         logging.debug('Clipboard History event: %s, argument: %s', event.__class__.__name__, event.get_argument())
-        items = ClipboardDatabase.search(event.get_argument() or None)
+        items = search(event.get_argument() or None)
         entries = []
         for item in items:
             entries.append(
