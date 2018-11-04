@@ -73,16 +73,16 @@ def search(term=None):
             'text': text,
         })
         return items
-
-class CopyAndSaveAction(CopyToClipboardAction):
-
-    def __init__(self, entry_id, text):
-        super(CopyAndSaveAction, self).__init__(text)
-        self.entry_id = entry_id
-
-    def run(self):
-        logging.info('Copy entry "%s" with the content "%s"', self.entry_id, self.text[:20])
-        super(CopyAndSaveAction, self).run()
+#
+# class CopyAndSaveAction(CopyToClipboardAction):
+#
+#     def __init__(self, entry_id, text):
+#         super(CopyAndSaveAction, self).__init__(text)
+#         self.entry_id = entry_id
+#
+#     def run(self):
+#         logging.info('Copy entry "%s" with the content "%s"', self.entry_id, self.text[:20])
+#         super(CopyAndSaveAction, self).run()
 
 class ClipboardKeywordEventListener(EventListener):
     def on_event(self, event, extension):
@@ -91,7 +91,7 @@ class ClipboardKeywordEventListener(EventListener):
         entries = []
         for item in items:
             entries.append(
-                ExtensionResultItem(name=item['text'], on_enter=CopyAndSaveAction(item['id'], item['text']))
+                ExtensionResultItem(name=item['text'], on_enter=CopyToClipboardAction(item['text']))
             )
         return RenderResultListAction(entries)
 
