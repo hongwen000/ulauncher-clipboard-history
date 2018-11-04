@@ -86,7 +86,7 @@ class CopyAndSaveAction(CopyToClipboardAction):
     def run(self):
         global database
         logging.info('Copy entry "%s" with the content "%s"', self.entry_id, self.text[:20])
-        database.update_entry(self.entry_id)
+        #database.update_entry(self.entry_id)
         super(CopyAndSaveAction, self).run()
 
 class ClipboardKeywordEventListener(EventListener):
