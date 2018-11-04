@@ -49,10 +49,10 @@ for ( var i = 0; i < size(); ++i ) {
 JSON.stringify(result);
 """
 
-def search(self, term=None):
+def search(term=None):
     logging.debug('Search for copy entry term: "%s"', term)
 
-    script = self.copyq_script_getMatches % term if term else self.copyq_script_getAll
+    script = copyq_script_getMatches % term if term else copyq_script_getAll
     #proc = subprocess.call(['copyq', '-'], stdin=script.encode(), stdout=subprocess.PIPE)
     proc = subprocess.Popen(['copyq', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     output = proc.communicate(input=script.encode())[0]
