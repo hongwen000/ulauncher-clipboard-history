@@ -71,19 +71,18 @@ class ClipboardDatabase(object):
         #proc = subprocess.call(['copyq', '-'], stdin=script.encode(), stdout=subprocess.PIPE)
         proc = subprocess.Popen(['copyq', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         output = proc.communicate(input=script.encode())[0]
-        logging.debug('Output of copyQ: "%s"', output)
         json_arr = json.loads(output)
         items = []
         pts = term if term else "[\s\S]*"
         pattern = re.compile(pts, re.IGNORECASE)
         for json_obj in json_arr:
             row = json_obj['row']
-            logging.debug('Row is: "%s"', row)
             text = json_obj['text']
             if not text:
                 text = "<i>No text</i>"
             else:
                 text = pattern.sub(lambda m: "<u>%s</u>" % m.group(0), cgi.escape(" ".join(filter(None, text.replace("\n", " ").split(" ")))))
+            logging.debug('Got item is: "%s" "%s"', row, text)
             items.append({
                 'id': row,
                 'text': text,
